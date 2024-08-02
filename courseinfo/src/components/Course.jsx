@@ -20,11 +20,21 @@ const Content = ({ parts }) => {
   );
 };
 
+const Total = ({ parts }) => {
+  const totalExercises = parts.reduce(
+    (accum, part) => accum + part.exercises,
+    0
+  );
+  return <p>total of {totalExercises} exercises</p>;
+};
+
 const Course = ({ course }) => {
+  console.log(course);
   return (
     <section>
       <Header name={course.name} />
       <Content parts={course.parts} />
+      <Total parts={course.parts} />
     </section>
   );
 };
