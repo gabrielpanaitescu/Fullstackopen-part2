@@ -1,5 +1,5 @@
 const Header = ({ name }) => {
-  return <h1>{name}</h1>;
+  return <h2>{name}</h2>;
 };
 
 const Part = ({ part }) => {
@@ -29,7 +29,6 @@ const Total = ({ parts }) => {
 };
 
 const Course = ({ course }) => {
-  console.log(course);
   return (
     <section>
       <Header name={course.name} />
