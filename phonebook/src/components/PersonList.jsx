@@ -5,7 +5,7 @@ const PersonList = ({ persons, handleDelete }) => {
     <ul>
       {persons.map((person) => (
         <Person
-          key={person.number}
+          key={person.id}
           person={person}
           handleDelete={() => handleDelete(person)}
         />

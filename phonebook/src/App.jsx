@@ -19,10 +19,10 @@ const App = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!newName || !newNumber) {
-      alert("Please complete the form with a name and a number");
-      return;
-    }
+    const newPersonObj = {
+      name: newName,
+      number: newNumber,
+    };
 
     const isNameDuplicate = persons.some(
       (person) => person.name.toLowerCase() === newName.toLowerCase()
@@ -30,19 +30,48 @@ const App = () => {
     const isNumberDuplicate = persons.some(
       (person) => person.number === newNumber
     );
-
-    if (isNameDuplicate) {
-      alert(`${newName} is already added to phonebook`);
+    if (isNumberDuplicate) {
+      const whoNumberCorrespondsTo = persons.find(
+        (person) => person.number === newNumber
+      );
+      alert(
+        `Number '${newNumber}' is already added to phonebook. It corresponds to '${whoNumberCorrespondsTo.name}'`
+      );
       return;
-    } else if (isNumberDuplicate) {
-      alert(`${newNumber} is already added to phonebook`);
+    } else if (isNameDuplicate) {
+      const replaceNumber = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+      if (!replaceNumber) return;
+
+      const personToUpdate = persons.find(
+        (person) => person.name.toLowerCase() === newName.toLowerCase()
+      );
+      personService
+        .update(personToUpdate.id, newPersonObj)
+        .then((returnedPerson) => {
+          setPersons(
+            persons.map((person) =>
+              person.id !== personToUpdate.id ? person : returnedPerson
+            )
+          );
+          console.log(returnedPerson);
+        })
+        .catch((error) => {
+          alert(
+            `person '${personToUpdate.name}' was already deleted from server`
+          );
+          setPersons(
+            persons.filter((person) => person.id !== personToUpdate.id)
+          );
+        });
       return;
     }
 
-    const newPersonObj = {
-      name: newName,
-      number: newNumber,
-    };
+    if (!newName || !newNumber) {
+      alert("Please complete the form with a name and a number");
+      return;
+    }
 
     personService.create(newPersonObj).then((returnedPerson) => {
       setPersons(persons.concat(returnedPerson));
@@ -64,11 +93,11 @@ const App = () => {
       .deleteItem(id)
       .then((deletedNote) => {
         console.log(deletedNote);
-        setPersons(persons.filter((p) => p.id !== id));
+        setPersons(persons.filter((person) => person.id !== id));
       })
       .catch((error) => {
         alert(`person '${person.name}' was already deleted from server`);
-        setPersons(persons.filter((p) => p.id !== id));
+        setPersons(persons.filter((person) => person.id !== id));
       });
   };
 

@@ -9,11 +9,16 @@ const PersonForm = ({
     <form onSubmit={handleSubmit}>
       <div>
         name:
-        <input value={newName} onChange={(e) => setNewName(e.target.value)} />
+        <input
+          required
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+        />
       </div>
       <div>
         phone:
         <input
+          required
           value={newNumber}
           onChange={(e) => setNewNumber(e.target.value)}
         />
