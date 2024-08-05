@@ -4,6 +4,8 @@ import PersonForm from "./components/PersonForm.jsx";
 import PersonList from "./components/PersonList.jsx";
 import axios from "axios";
 
+const baseUrl = "http://localhost:3001/persons";
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
@@ -11,7 +13,7 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
+    axios.get(baseUrl).then((response) => {
       setPersons(response.data);
     });
   }, []);
@@ -19,35 +21,37 @@ const App = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!newName || !newNumber) {
-      alert("Please complete the form with a name and a number");
-      return;
-    }
+    // if (!newName || !newNumber) {
+    //   alert("Please complete the form with a name and a number");
+    //   return;
+    // }
 
-    const isNameDuplicate = persons.some((person) => person.name === newName);
-    const isNumberDuplicate = persons.some(
-      (person) => person.number === newNumber
-    );
+    // const isNameDuplicate = persons.some((person) => person.name === newName);
+    // const isNumberDuplicate = persons.some(
+    //   (person) => person.number === newNumber
+    // );
 
-    if (isNameDuplicate) {
-      alert(`${newName} is already added to phonebook`);
-      return;
-    } else if (isNumberDuplicate) {
-      alert(`${newNumber} is already added to phonebook`);
-      return;
-    }
+    // if (isNameDuplicate) {
+    //   alert(`${newName} is already added to phonebook`);
+    //   return;
+    // } else if (isNumberDuplicate) {
+    //   alert(`${newNumber} is already added to phonebook`);
+    //   return;
+    // }
 
     const newPersonObj = {
       name: newName,
       number: newNumber,
     };
 
-    setPersons(persons.concat(newPersonObj));
-    setNewName("");
-    setNewNumber("");
+    axios.post(baseUrl, newPersonObj).then((response) => {
+      setPersons(persons.concat(response.data));
+      setNewName("");
+      setNewNumber("");
+    });
   };
 
-  const filteredPersons = filter
+  const personsToShow = filter
     ? [...persons].filter((person) =>
         person.name.toLowerCase().includes(filter.toLowerCase())
       )
@@ -66,7 +70,7 @@ const App = () => {
         setNewNumber={setNewNumber}
       />
       <h2>Numbers</h2>
-      <PersonList persons={filteredPersons} />
+      <PersonList persons={personsToShow} />
     </div>
   );
 };
