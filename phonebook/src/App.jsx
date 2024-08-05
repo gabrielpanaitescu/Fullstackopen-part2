@@ -31,11 +31,11 @@ const App = () => {
       (person) => person.number === newNumber
     );
     if (isNumberDuplicate) {
-      const whoNumberCorrespondsTo = persons.find(
+      const personLinkedWithNumber = persons.find(
         (person) => person.number === newNumber
       );
       alert(
-        `Number '${newNumber}' is already added to phonebook. It corresponds to '${whoNumberCorrespondsTo.name}'`
+        `Number '${newNumber}' is already added to phonebook. It corresponds to '${personLinkedWithNumber.name}'`
       );
       return;
     } else if (isNameDuplicate) {
