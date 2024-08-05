@@ -51,6 +51,27 @@ const App = () => {
     });
   };
 
+  const handleDeleteOf = (person) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete '${person.name}' from phonebook?`
+      )
+    )
+      return;
+
+    const id = person.id;
+    personService
+      .deleteItem(id)
+      .then((deletedNote) => {
+        console.log(deletedNote);
+        setPersons(persons.filter((p) => p.id !== id));
+      })
+      .catch((error) => {
+        alert(`person '${person.name}' was already deleted from server`);
+        setPersons(persons.filter((p) => p.id !== id));
+      });
+  };
+
   const personsToShow = filter
     ? [...persons].filter((person) =>
         person.name.toLowerCase().includes(filter.toLowerCase())
@@ -70,7 +91,7 @@ const App = () => {
         setNewNumber={setNewNumber}
       />
       <h2>Numbers</h2>
-      <PersonList persons={personsToShow} />
+      <PersonList persons={personsToShow} handleDelete={handleDeleteOf} />
     </div>
   );
 };
