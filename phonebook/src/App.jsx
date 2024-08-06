@@ -43,17 +43,18 @@ const App = () => {
       number: newNumber,
     };
 
-    let isNameDuplicate;
-    personService.getAll().then((currentPersons) => {
-      isNameDuplicate = currentPersons.some(
-        (person) => person.name.toLowerCase() === newName.toLowerCase()
-      );
-      console.log(isNameDuplicate);
-    });
-    console.log(isNameDuplicate);
+    if (!newName || !newNumber) {
+      alert("Please complete the form with a name and a number");
+      return;
+    }
+
+    const isNameDuplicate = persons.some(
+      (person) => person.name.toLowerCase() === newName.toLowerCase()
+    );
     const isNumberDuplicate = persons.some(
       (person) => person.number === newNumber
     );
+
     if (isNumberDuplicate) {
       const personLinkedWithNumber = persons.find(
         (person) => person.number === newNumber
@@ -93,11 +94,6 @@ const App = () => {
             persons.filter((person) => person.id !== personToUpdate.id)
           );
         });
-      return;
-    }
-
-    if (!newName || !newNumber) {
-      alert("Please complete the form with a name and a number");
       return;
     }
 
