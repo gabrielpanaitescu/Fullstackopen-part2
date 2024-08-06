@@ -3,18 +3,37 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm.jsx";
 import PersonList from "./components/PersonList.jsx";
 import personService from "./services/persons.js";
+import Notification from "./components/Notification.jsx";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState("");
+  const [notificationTimeoutID, setNotificationTimeoutID] = useState("");
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
       setPersons(initialPersons);
     });
   }, []);
+
+  const setNotificationMessage = (msg, msgType) => {
+    if (notificationTimeoutID) clearTimeout(notificationTimeoutID);
+
+    setMessage(msg);
+    setMessageType(msgType);
+
+    const timeoutID = setTimeout(() => {
+      setMessage(null);
+      setMessageType("");
+      setNotificationTimeoutID("");
+    }, 3000);
+
+    setNotificationTimeoutID(timeoutID);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,9 +43,14 @@ const App = () => {
       number: newNumber,
     };
 
-    const isNameDuplicate = persons.some(
-      (person) => person.name.toLowerCase() === newName.toLowerCase()
-    );
+    let isNameDuplicate;
+    personService.getAll().then((currentPersons) => {
+      isNameDuplicate = currentPersons.some(
+        (person) => person.name.toLowerCase() === newName.toLowerCase()
+      );
+      console.log(isNameDuplicate);
+    });
+    console.log(isNameDuplicate);
     const isNumberDuplicate = persons.some(
       (person) => person.number === newNumber
     );
@@ -55,11 +79,15 @@ const App = () => {
               person.id !== personToUpdate.id ? person : returnedPerson
             )
           );
-          console.log(returnedPerson);
+          setNotificationMessage(
+            `Updated the number of person '${personToUpdate.name}'`,
+            "success"
+          );
         })
         .catch((error) => {
-          alert(
-            `person '${personToUpdate.name}' was already deleted from server`
+          setNotificationMessage(
+            `person '${personToUpdate.name}' was already deleted from server`,
+            "error"
           );
           setPersons(
             persons.filter((person) => person.id !== personToUpdate.id)
@@ -77,6 +105,7 @@ const App = () => {
       setPersons(persons.concat(returnedPerson));
       setNewName("");
       setNewNumber("");
+      setNotificationMessage(`Added '${returnedPerson.name}'`, "success");
     });
   };
 
@@ -92,11 +121,14 @@ const App = () => {
     personService
       .deleteItem(id)
       .then((deletedNote) => {
-        console.log(deletedNote);
+        setNotificationMessage(`Deleted '${person.name}'`, "success");
         setPersons(persons.filter((person) => person.id !== id));
       })
       .catch((error) => {
-        alert(`person '${person.name}' was already deleted from server`);
+        setNotificationMessage(
+          `person '${person.name}' was already deleted from server`,
+          "error"
+        );
         setPersons(persons.filter((person) => person.id !== id));
       });
   };
@@ -110,6 +142,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} messageType={messageType} />
       <Filter filter={filter} setFilter={setFilter} />
       <h2>add new contact</h2>
       <PersonForm
