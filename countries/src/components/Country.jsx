@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Weather from "./Weather";
 
 const Country = ({ country, showMore }) => {
   const [show, setShow] = useState(showMore);
@@ -8,34 +9,33 @@ const Country = ({ country, showMore }) => {
   }, [showMore]);
 
   const handleToggle = () => {
-    console.log(show);
     setShow(!show);
   };
 
-  const createToggleShowButton = () => {
-    return <button onClick={handleToggle}>{show ? "hide" : "show"}</button>;
-  };
-
-  return !show ? (
+  return (
     <li>
-      {country.name.common} {createToggleShowButton()}
+      {!show ? country.name.common : <h1>{country.name.common}</h1>}
+      <button onClick={handleToggle}>{show ? "hide" : "show"}</button>
+      {show && (
+        <>
+          <p>capital: {country.capital}</p>
+          <p> area: {country.area}</p>
+          <p>
+            <strong>languages:</strong>
+          </p>
+          <ul>
+            {Object.values(country.languages).map((language) => {
+              return <li key={language}>{language}</li>;
+            })}
+          </ul>
+          <img src={country.flags.png} alt={country.flags.alt} />
+          <Weather
+            capital={country.capital}
+            coords={country.capitalInfo.latlng}
+          />
+        </>
+      )}
     </li>
-  ) : (
-    <div>
-      <h1>{country.name.common}</h1>
-      {createToggleShowButton()}
-      <p>capital: {country.capital}</p>
-      <p> area: {country.area}</p>
-      <p>
-        <strong>languages:</strong>
-      </p>
-      <ul>
-        {Object.values(country.languages).map((language) => {
-          return <li key={language}>{language}</li>;
-        })}
-      </ul>
-      <img src={country.flags.png} alt={country.flags.alt} />
-    </div>
   );
 };
 

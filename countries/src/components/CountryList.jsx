@@ -6,15 +6,19 @@ const CountryList = ({ countries }) => {
   if (countries.length > 10)
     return <p>Too many matches, specify another filter</p>;
 
-  return countries.length === 1 ? (
-    <Country country={countries[0]} showMore={true} />
-  ) : (
+  if (countries.length === 1) console.log(countries[0]);
+
+  return (
     <ul>
-      {countries.map((country) => {
-        return (
-          <Country key={country.ccn3} country={country} showMore={false} />
-        );
-      })}
+      {countries.length === 1 ? (
+        <Country country={countries[0]} showMore={true} />
+      ) : (
+        countries.map((country) => {
+          return (
+            <Country key={country.ccn3} country={country} showMore={false} />
+          );
+        })
+      )}
     </ul>
   );
 };
